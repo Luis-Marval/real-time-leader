@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/users';
 import { UsersService } from './users.service';
 
-describe('UsersService', () => {
+describe('User Module', () => {
   let service: UsersService;
   let repository: Repository<User>;
 
@@ -14,9 +14,7 @@ describe('UsersService', () => {
     leftJoin: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     andWhere: jest.fn().mockReturnThis(),
-    getRawMany: jest
-      .fn()
-      .mockResolvedValue([{ score: 10, name: 'game 1' }]),
+    getRawMany: jest.fn().mockResolvedValue([{ score: 10, name: 'game 1' }]),
   };
 
   // Mock del repositorio de TypeORM

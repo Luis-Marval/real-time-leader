@@ -6,7 +6,7 @@ import { GameService } from './game.service';
 import { ActivitisController } from './game.controller';
 import { AuthGuard } from '../auth/guards/auth.guard';
 
-describe('gameService', () => {
+describe('Game Module', () => {
   let service: GameService;
   let repository: Repository<Game>;
   let controller: ActivitisController;
@@ -21,8 +21,14 @@ describe('gameService', () => {
   };
 
   // Mock del repositorio de TypeORM
-  const mockgameRepository = {
-    findOneBy: jest.fn().mockReturnThis(),
+  const mockGameRepository = {
+    findOneBy: jest.fn(() => {
+      return {
+        id: 28,
+        name: 'nombre de la actividad',
+        description: 'descripcion de la actividad',
+      };
+    }),
     save: jest.fn().mockReturnThis(),
     update: jest.fn().mockReturnThis(),
     findOne: jest.fn().mockReturnThis(),
@@ -31,13 +37,14 @@ describe('gameService', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ActivitisController],
       providers: [
         GameService,
         {
           provide: getRepositoryToken(Game),
-          useValue: mockgameRepository,
+          useValue: mockGameRepository,
         },
       ],
     })
@@ -49,115 +56,133 @@ describe('gameService', () => {
     controller = module.get<ActivitisController>(ActivitisController);
   });
 
-  describe('createGame', () => {
-    it('create a new game', async () => {
-      const mockCreateGame = {
-        id: 28,
-        name: 'nombre de la actividad',
-        description: 'descripcion de la actividad',
-      };
+  describe('gameService', () => {
+    describe('createGame', () => {
+      it('create a new game', async () => {
+        const mockCreateGame = {
+          id: 28,
+          name: 'nombre de la actividad',
+          description: 'descripcion de la actividad',
+        };
 
-      jest.spyOn(repository, 'save').mockResolvedValue(mockCreateGame as Game);
+        mockGameRepository.save.mockResolvedValue(mockCreateGame);
 
-      const result = await service.create(
-        mockCreateGame.name,
-        mockCreateGame.description,
-      );
-      expect(repository.save).toHaveBeenCalled();
-      expect(result).toEqual(true);
+        const result = await service.create(
+          mockCreateGame.name,
+          mockCreateGame.description,
+        );
+        expect(repository.save).toHaveBeenCalled();
+        expect(result).toEqual(true);
+      });
+      it('manage error in create game', async () => {
+        mockGameRepository.save.mockRejectedValue(
+          new Error('Error en crear la actividad'),
+        );
+
+        await expect(
+          service.create(
+            'nombre de la actividad',
+            'descripcion de la actividad',
+          ),
+        ).rejects.toThrow('Error en crear la actividad');
+      });
     });
-    it('manage error in create game', async () => {
-      jest
-        .spyOn(repository, 'save')
-        .mockRejectedValue(new Error('Error en crear la actividad'));
 
-      await expect(
-        service.create('nombre de la actividad', 'descripcion de la actividad'),
-      ).rejects.toThrow('Error en crear la actividad');
-    });
-  });
-
-  describe('findgame', () => {
-    const mockFindGame = [
-      {
-        id: 28,
-        name: 'nombre de la actividad',
-        description: 'descripcion de la actividad',
-      },
-    ];
-    it('find one Game by number', async () => {
-      jest
-        .spyOn(repository, 'findBy')
-        .mockResolvedValue(mockFindGame as Game[]);
-
-      const result = await service.find(mockFindGame[0].id);
-      expect(repository.findBy).toHaveBeenCalled();
-      expect(result).toEqual(mockFindGame);
-    });
-    it('find one game by name', async () => {
-      const result = await service.find(mockFindGame[0].name);
-      expect(result).toEqual([
+    describe('findgame', () => {
+      const mockFindGame = [
         {
-          id: 1,
-          name: 'game 1',
-          description: 'description',
+          id: 28,
+          name: 'nombre de la actividad',
+          description: 'descripcion de la actividad',
         },
-      ]);
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
-        'game.name LIKE :name',
-        { name: `%${mockFindgame[0].name}%` },
-      );
-      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'game.isdelete = false',
-      );
-    });
-    it('find a delete astivity', async () => {
-      jest.spyOn(repository, 'findBy').mockResolvedValue([]);
+      ];
+      it('find one Game by number', async () => {
+        mockGameRepository.findBy.mockResolvedValue(mockFindGame);
 
-      const result = await service.find(mockFindGame[0].id);
-      expect(repository.findBy).toHaveBeenCalled();
-      expect(repository.findBy).toHaveBeenCalledWith({
-        id: mockFindGame[0].id,
-        isDelete: false,
+        const result = await service.find(mockFindGame[0].id);
+        expect(repository.findBy).toHaveBeenCalled();
+        expect(result).toEqual(mockFindGame);
       });
-      expect(result).toEqual([]);
-    });
-  });
-
-  describe('update', () => {
-    const mockUpdateGame = {
-      id: 28,
-      name: 'nuevo nombre de la actividad',
-      description: 'nueva descripcion de la actividad',
-    };
-    it('update one game', async () => {
-      jest.spyOn(repository, 'save').mockResolvedValue(mockUpdateGame as Game);
-
-      const result = await service.update(mockUpdateGame.id, {
-        name: mockUpdateGame.name,
-        description: mockUpdateGame.description,
+      it('find one game by name', async () => {
+        const result = await service.find(mockFindGame[0].name);
+        expect(result).toEqual([
+          {
+            id: 1,
+            name: 'game 1',
+            description: 'description',
+          },
+        ]);
+        expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+          'game.name LIKE :name',
+          { name: `%${mockFindGame[0].name}%` },
+        );
+        expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+          'game.isdelete = false',
+        );
       });
-      expect(repository.save).toHaveBeenCalledWith(mockUpdateGame);
-      expect(result).toEqual(true);
-    });
-  });
+      it('find a delete astivity', async () => {
+        mockGameRepository.findBy.mockResolvedValue([]);
 
-  describe('delete', () => {
-    const mockFindGame = [
-      {
+        const result = await service.find(mockFindGame[0].id);
+        expect(repository.findBy).toHaveBeenCalled();
+        expect(repository.findBy).toHaveBeenCalledWith({
+          id: mockFindGame[0].id,
+          isDelete: false,
+        });
+        expect(result).toEqual([]);
+      });
+    });
+
+    describe('update', () => {
+      const mockUpdateGame = {
         id: 28,
-        name: 'nombre de la actividad',
-        description: 'descripcion de la actividad',
-      },
-    ];
-    it('delete one game', async () => {
-      jest
-        .spyOn(repository, 'update')
-        .mockResolvedValue(mockFindGame as unknown as UpdateResult);
+        name: 'nuevo nombre de la actividad',
+        description: 'nueva descripcion de la actividad',
+      };
+      it('update one game', async () => {
+        mockGameRepository.save.mockResolvedValue(mockUpdateGame);
 
-      const result = await service.delete(mockFindGame[0].id);
-      expect(repository.update).toHaveBeenCalled();
-      expect(result).toEqual(true);
+        const result = await service.update(mockUpdateGame.id, {
+          name: mockUpdateGame.name,
+          description: mockUpdateGame.description,
+        });
+        expect(repository.save).toHaveBeenCalledWith(mockUpdateGame);
+        expect(result).toEqual(true);
+      });
+    });
+
+    describe('delete', () => {
+      const mockFindGame = [
+        {
+          id: 28,
+          name: 'nombre de la actividad',
+          description: 'descripcion de la actividad',
+        },
+      ];
+      it('delete one game', async () => {
+        mockGameRepository.save.mockResolvedValue(mockFindGame);
+
+        const result = await service.delete(mockFindGame[0].id);
+        expect(repository.update).toHaveBeenCalled();
+        expect(result).toEqual(true);
+      });
+    });
+  });
+
+  describe('ScoreController', () => {
+    describe('create', () => {
+      it('debe llamar a service.submitScore', async () => {
+        const dto = { userId: 1, gameId: 10, points: 100 };
+        const spy = jest.spyOn(service, 'create').mockResolvedValue(true);
+
+        const result = await controller.createGame({
+          name: 'nueva actividad',
+          description: 'descripcond',
+        });
+
+        expect(spy).toHaveBeenCalledWith(dto);
+        expect(result).toBe(true);
+      });
     });
   });
 });
