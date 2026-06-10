@@ -29,17 +29,20 @@ export class UsersService {
     }
   }
 
-  userRankings(idU: number, idA?: number) {
+  userRankings(idU: number, idG?: number) {
     const ranking = this.usersRepository
       .createQueryBuilder('u')
-      .select(['s.point as score', 'a.name as name'])
+      .select(['s.point as score', 'g.name as name'])
       .leftJoin('u.scores', 's')
-      .leftJoin('s.game', 'a')
+      .leftJoin('s.game', 'g')
       .where('u.id  = :idU', { idU });
-    if (idA !== undefined) {
-      ranking.andWhere('a.id  = :idA', { idA });
+    if (idG !== undefined && idG !== null) {
+      const idGNumber = Number(idG);
+      if (!isNaN(idGNumber)) {
+        ranking.andWhere('g.id  = :idG', { idG: idGNumber });
+      }
     }
-    ranking.andWhere('game.isdelete = false');
+    ranking.andWhere('g.isdelete = false');
     const rest = ranking.getRawMany();
     return rest;
   }

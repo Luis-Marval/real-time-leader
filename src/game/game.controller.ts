@@ -14,13 +14,16 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { GameService } from './game.service';
 import { CreateGameDTO } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('game')
-export class ActivitisController {
+export class GameController {
   constructor(private GameService: GameService) {}
 
   @Post('')
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Crear una nueva actividad/juego' })
+  @ApiResponse({ status: 201, description: 'Actividad creada correctamente' })
   async createGame(@Body() createActivitDTO: CreateGameDTO) {
     if (createActivitDTO.name == undefined)
       throw new BadRequestException('Ingrese el nombre de la actividad');
@@ -35,6 +38,8 @@ export class ActivitisController {
 
   @Get('/')
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Buscar actividad por nombre' })
+  @ApiResponse({ status: 200, description: 'Actividad encontrada' })
   findGame(@Query('name') name?: string) {
     if (name == undefined)
       throw new BadRequestException('Ingrese el nombre de la actividad');
@@ -43,6 +48,8 @@ export class ActivitisController {
 
   @Get('/:id')
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Buscar actividad por ID' })
+  @ApiResponse({ status: 200, description: 'Actividad encontrada' })
   findGameById(@Param('id') id?: number) {
     if (id == undefined)
       throw new BadRequestException('Ingrese el id de la actividad');
@@ -51,6 +58,11 @@ export class ActivitisController {
 
   @Patch('/:id')
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Actualizar actividad por ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Actividad actualizada exitosamente',
+  })
   async update(@Param('id') id: number, @Body() UpdateGameDto: UpdateGameDto) {
     try {
       await this.GameService.update(Number(id), UpdateGameDto);
@@ -62,6 +74,8 @@ export class ActivitisController {
 
   @Delete('/:id')
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Eliminar actividad por ID' })
+  @ApiResponse({ status: 200, description: 'Actividad eliminada exitosamente' })
   async delete(@Param('id') id: number) {
     try {
       await this.GameService.delete(Number(id));

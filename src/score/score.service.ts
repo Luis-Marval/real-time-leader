@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GlideClient } from '@valkey/valkey-glide';
 import { Repository } from 'typeorm';
 import { Score } from './entities/score.entity';
+import { User } from '../users/entities/users';
 import { SubmitScoreDTO } from './dto/submit-score.dto';
 import { TopPlayerBody } from './dto/top-player-body.dto';
 
@@ -11,6 +12,8 @@ export class ScoreService {
   constructor(
     @InjectRepository(Score)
     private readonly scoreRepository: Repository<Score>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     @Inject('VALKEY_CLIENT') private readonly valkeyClient: GlideClient,
   ) {}
 
@@ -22,7 +25,14 @@ export class ScoreService {
         point: submitScore.points,
       },
     ]);
-    await this.valkeyClient.del([`leaderBoard:${submitScore.gameId}`]);
+    const user = await this.userRepository.findOneBy({
+      id: submitScore.userId,
+    });
+    if (user) {
+      await this.valkeyClient.zadd(`leaderBoard:${submitScore.gameId}`, {
+        [user.name]: submitScore.points,
+      });
+    }
     return true;
   }
 

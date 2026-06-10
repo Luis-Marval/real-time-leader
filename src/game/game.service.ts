@@ -60,7 +60,9 @@ export class GameService {
     try {
       const game = await this.GameRepository.findOneBy({ id });
       if (!game) return new NotFoundException('Actividad no encontrada');
-      Object.assign(game, updategameDto);
+      if (updategameDto.description !== undefined)
+        game.description = updategameDto.description;
+      if (updategameDto.name !== undefined) game.name = updategameDto.name;
       await this.GameRepository.save(game);
       return true;
     } catch (e: unknown) {

@@ -14,6 +14,7 @@ import { UserCreateDTO } from './DTO/user-create.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/users';
+import { appConfig } from '../constants';
 
 export interface tokenRefresh {
   userId?: number; // o tu tipo específico de usuario
@@ -50,15 +51,16 @@ export class AuthService {
     return { message: 'Registro exitoso' };
   }
 
-  tokenVerify(token: string): tokenRefresh | string | false {
+  tokenVerify(token: string): tokenRefresh | false {
     try {
       const decoded: tokenRefresh = this.jwtService.verify<tokenRefresh>(token);
+
       return decoded;
     } catch (e: unknown) {
       if (e instanceof Error) {
-        return false;
+        throw new Error(e.message);
       }
-      return false;
+      throw new Error('undefined error');
     }
   }
 
@@ -121,7 +123,7 @@ export class AuthService {
   }) {
     const acesstoken = this.jwtService.sign(
       { userId: id, Name: name, correo: correo },
-      { expiresIn: '1h' },
+      { expiresIn: `${appConfig.accessTokenLifeTime}s` },
     );
     return acesstoken;
   }
@@ -130,7 +132,7 @@ export class AuthService {
     const refresToken = this.jwtService.sign(
       { userId: id },
       {
-        expiresIn: '7d',
+        expiresIn: `${appConfig.refreshTokenLifeTime}s`,
       },
     );
     return refresToken;

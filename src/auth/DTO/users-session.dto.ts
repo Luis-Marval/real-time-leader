@@ -1,16 +1,18 @@
 import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
-/* import { ApiProperty } from '@nestjs/swagger'; */
+import { ApiProperty } from '@nestjs/swagger';
+
 export class UserSessionDTO {
+  @ApiProperty()
   id!: number;
   @IsString()
-  /*   @ApiProperty() */
+  @ApiProperty()
   name!: string;
   @IsEmail()
   @IsNotEmpty()
-  /*   @ApiProperty() */
+  @ApiProperty()
   correo!: string;
   @IsString()
   @IsNotEmpty()
-  /*   @ApiProperty() */
+  @ApiProperty()
   password!: string;
 }

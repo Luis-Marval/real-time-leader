@@ -19,20 +19,22 @@ import { UserLoginDTO } from './DTO/user-login.dto.js';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserCreateDTO } from './DTO/user-create.dto.js';
 
-@Controller('')
+@Controller('auth')
 export class AuthController {
   constructor(private AuthService: AuthService) {
     this.AuthService = AuthService;
   }
 
   @Post('/signup')
+  @ApiOperation({ summary: 'Creacion de cuenta' })
+  @ApiResponse({ status: 201, description: 'cuenta creada' })
   async registerUser(@Body() user: UserCreateDTO) {
     return await this.AuthService.createUser(user);
   }
 
   @Post('/login')
   @ApiOperation({ summary: 'Inicio de Session del Usuario' })
-  @ApiResponse({ status: 200, description: 'Session de Usuario Iniciara' })
+  @ApiResponse({ status: 200, description: 'cession de Usuario iniciara' })
   async loginUser(@Body() user: UserLoginDTO, @Res() res: Response) {
     const { password, correo } = user;
     try {
@@ -59,42 +61,16 @@ export class AuthController {
         .status(200)
         .json({
           success: true,
-          message: 'Registro exitoso',
+          message: 'Inicio exitoso',
         });
     } catch (err) {
       throw new ForbiddenException(err);
     }
   }
 
-  @Post('/verify')
-  userAuthVerify(@Req() req: Request, @Res() res: Response) {
-    if (req.cookies == undefined) res.status(401).json({ status: false });
-    const { access_token } = req.cookies as { access_token: string };
-    if (!access_token) res.status(401).json({ status: false });
-    const decode = this.AuthService.tokenVerify(access_token);
-    if (decode == false || typeof decode == 'string') {
-      return res.status(401).json({ status: false });
-    }
-    return res.status(200).json({ status: true });
-  }
-
-  /*   @Post('/recuperar')
-  async sendEmailCode(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() cuerpo: userRecoverEmailDTO,
-  ) {
-    const { email } = cuerpo;
-    const result = await this.AuthService.RecoverCode(email);
-    if (result == false) {
-      res.statusCode = 409;
-      return { message: 'correo no encontrado' };
-    }
-    return { mesaje: 'listo' };
-  } */
-
   @Post('/refresh')
   @ApiOperation({ summary: 'Refrescando el Timepo del la session' })
+  @ApiResponse({ status: 201, description: 'nuevo access_token creado' })
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -108,7 +84,6 @@ export class AuthController {
       }
       const refresh_token = req.cookies.refresh_token as string;
       const acesstoken = await this.AuthService.refreshSession(refresh_token);
-      console.log(acesstoken);
       res
         .clearCookie('access_token')
         .cookie('access_token', acesstoken, {
@@ -127,6 +102,8 @@ export class AuthController {
 
   @Post('/logout')
   @HttpCode(200)
+  @ApiOperation({ summary: 'Refrescando el Timepo del la session' })
+  @ApiResponse({ status: 200, description: 'session finalizada' })
   logout(@Res() res: Response) {
     res
       .clearCookie('access_token')

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { ActivitisModule } from './game/game.module';
+import { GameModule } from './game/game.module';
 import { appConfig } from './constants';
 import { User } from './users/entities/users';
 import { Game } from './game/entities/game';
@@ -16,9 +16,9 @@ import { LeaderboardModule } from './leaderboard/leaderboard.module';
   imports: [
     AuthModule,
     UsersModule,
-    ActivitisModule,
+    GameModule,
     TypeOrmModule.forRoot({
-      type: appConfig.Type as 'mariadb' | 'postgres',
+      type: 'postgres',
       host: appConfig.dbHost,
       port: appConfig.dbPort,
       username: appConfig.dbUser,
