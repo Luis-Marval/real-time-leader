@@ -1,5 +1,5 @@
 import { loadEnvFile } from 'node:process';
-loadEnvFile('/app/.env');
+loadEnvFile('./.env');
 
 export const appConfig = {
   dbPort: Number(process.env.DB_PORT) || 5434,
