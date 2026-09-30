@@ -49,12 +49,17 @@ El proyecto Real-Time Leaderboard es un servicio backend diseñado para gestiona
   - Manejo de errores y logging
   - Manejo personalizado de excepciones
   - Respuestas de error estandarizadas
-
+  - 
 ## Installation
+
+1. Prerrequisito
+   - Valkey
+   - Postgres
+   - node
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/](https://github.com/Luis-Marval/real-time-leader.git)
+   git clone https://github.com/Luis-Marval/real-time-leader.git
    ```
 2. Navigate to the project directory:
    ```bash
