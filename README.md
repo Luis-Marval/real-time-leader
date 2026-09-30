@@ -54,7 +54,7 @@ El proyecto Real-Time Leaderboard es un servicio backend diseñado para gestiona
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/
+   git clone [https://github.com/](https://github.com/Luis-Marval/real-time-leader.git)
    ```
 2. Navigate to the project directory:
    ```bash
