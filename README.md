@@ -2,7 +2,7 @@
 
 ## descripcion
 
-El proyecto Real-Time Leaderboard es un servicio backend diseñado para gestionar y mostrar tablas de posiciones en tiempo real para varios juegos. Proporciona un conjunto completo de características para la autenticación de usuarios, la gestión de juegos y el seguimiento de puntuaciones. Los usuarios pueden registrarse, iniciar sesión y enviar sus puntuaciones, que luego se utilizan para generar tablas de posiciones dinámicas. El servicio incluye mecanismos robustos de autenticación y autorización, lo que garantiza un acceso seguro a las rutas protegidas.
+  El proyecto Real-Time Leaderboard es un servicio backend diseñado para gestionar y mostrar tablas de posiciones en tiempo real para varios juegos. Proporciona un conjunto completo de características para la autenticación de usuarios, la gestión de juegos y el seguimiento de puntuaciones. Los usuarios pueden registrarse, iniciar sesión y enviar sus puntuaciones, que luego se utilizan para generar tablas de posiciones dinámicas. El servicio incluye mecanismos robustos de autenticación y autorización, lo que garantiza un acceso seguro a las rutas protegidas.
 
 ## Features
 
@@ -49,7 +49,7 @@ El proyecto Real-Time Leaderboard es un servicio backend diseñado para gestiona
   - Manejo de errores y logging
   - Manejo personalizado de excepciones
   - Respuestas de error estandarizadas
-  - 
+
 ## Installation
 
 1. Prerrequisito
