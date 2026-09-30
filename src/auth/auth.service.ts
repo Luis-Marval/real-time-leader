@@ -93,25 +93,6 @@ export class AuthService {
     }
   }
 
-  async RecoverCode(correo: string) /* :Promise<userSessionDTO> */ {
-    try {
-      const confirmCorreo = await this.userService.findUser({ correo: correo });
-
-      if (typeof confirmCorreo == 'undefined') {
-        return false;
-      }
-      const d = new Date();
-      const codeObject = {
-        number: Math.floor(Math.random() * 10000000),
-        timeLimit: new Date(d.setMinutes(d.getMinutes() + 5)),
-      };
-      return codeObject;
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : e;
-      throw new BadRequestException(message);
-    }
-  }
-
   accessToken({
     id,
     correo,

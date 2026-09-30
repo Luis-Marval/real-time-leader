@@ -16,5 +16,3 @@ export const appConfig = {
   valkeyPORT: Number(process.env.VALKEY_PORT) || 6379,
   ValkeyPass: process.env.VALKEY_PASSWORD,
 };
-
-console.log(appConfig.accessTokenLifeTime, appConfig.refreshTokenLifeTime);

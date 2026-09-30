@@ -7,7 +7,6 @@ import { appConfig } from '../constants';
     {
       provide: 'VALKEY_CLIENT',
       useFactory: async () => {
-        // Configura el cliente en modo Standalone (o GlideClusterClient si usas Cluster)
         return await GlideClient.createClient({
           addresses: [
             { host: appConfig.valkeyHost, port: appConfig.valkeyPORT },
